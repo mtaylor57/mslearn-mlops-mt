@@ -3,7 +3,11 @@ name: Manually trigger an Azure Machine Learning job
 on:
   workflow_dispatch:
 
-jobs:
+permissions:
+  id-token: write
+  contents: read
+
+jobs:  
   train:
     runs-on: ubuntu-latest
     steps:
