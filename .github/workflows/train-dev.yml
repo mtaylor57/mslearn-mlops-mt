@@ -10,7 +10,7 @@ on:
       - 'src/job.yml'
 
 permissions:
-  id_token: write
+  id-token: write
   contents: read
   pull-requests: write
 
