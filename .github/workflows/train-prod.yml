@@ -68,6 +68,21 @@ jobs:
 
           echo "job_name=$JOB_NAME" >> "$GITHUB_OUTPUT"
 
+          while true; do
+            STATUS=$(az ml job show --name "$JOB_NAME" \
+              --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+              --workspace-name "${{ vars.AZURE_WORKSPACE_NAME }}" \
+              --query status -o tsv)
+            echo "Current status: $STATUS"
+            if [[ "$STATUS" == "Completed" ]]; then
+              break
+            elif [[ "$STATUS" == "Failed" || "$STATUS" == "Canceled" ]]; then
+              echo "Job ended with status: $STATUS"
+              exit 1
+            fi
+            sleep 30
+          done
+
       - name: Download prod training outputs
         id: download
         run: |
