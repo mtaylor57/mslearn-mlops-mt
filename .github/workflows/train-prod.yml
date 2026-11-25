@@ -122,23 +122,26 @@ jobs:
 
       - name: Comment prod metrics on pull request
         uses: actions/github-script@v7
+        env:
+          ACC: ${{ steps.parse-metrics.outputs.prod_accuracy }}
+          AUC: ${{ steps.parse-metrics.outputs.prod_auc }}
+          JOB_NAME: ${{ steps.train.outputs.job_name }}
+          STUDIO_URL: ${{ steps.download.outputs.studio_url }}
         with:
           script: |
-            const acc = '${{ steps.parse-metrics.outputs.prod_accuracy }}';
-            const auc = '${{ steps.parse-metrics.outputs.prod_auc }}';
-            const jobName = '${{ steps.train.outputs.job_name }}';
-            const studioUrl = '${{ steps.download.outputs.studio_url }}';
-
+            const { ACC, AUC, JOB_NAME, STUDIO_URL } = process.env;
             const prNumber = context.issue.number;
 
             let body = '✅ Prod training workflow completed.';
             body += '\n\n**Azure ML job**';
-            body += `\n- Name: ${jobName}`;
-            if (studioUrl) body += `\n- Studio: ${studioUrl}`;
+            body += `\n- Name: ${JOB_NAME}`;
+            if (STUDIO_URL && STUDIO_URL.trim()) {
+              body += `\n- Studio: ${STUDIO_URL.trim()}`;
+            }
 
             body += '\n\n**Prod evaluation metrics**';
-            body += `\n- Accuracy: ${acc}`;
-            body += `\n- AUC: ${auc}`;
+            body += `\n- Accuracy: ${ACC}`;
+            body += `\n- AUC: ${AUC}`;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -146,3 +149,4 @@ jobs:
               issue_number: prNumber,
               body,
             });
+
