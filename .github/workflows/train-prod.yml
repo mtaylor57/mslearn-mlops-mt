@@ -147,11 +147,12 @@ jobs:
           echo "Sending JSON payload:"
           echo "$PAYLOAD"
 
-          curl -i -s -X POST \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://github.com{REPO}/issues/${PR_NUMBER}/comments" \
-            -d "$PAYLOAD"
+          curl -v -X POST \
+          -H "Authorization: Bearer $GH_TOKEN" \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "https://github.com{REPO}/issues/${PR_NUMBER}/comments" \
+          -d "$PAYLOAD"
+
 
 
